@@ -1,3 +1,5 @@
+import ast
+
 from flask import Flask
 from flask import request
 
@@ -15,5 +17,5 @@ def healthcheck():
 def parse():
     fl = request.files['source']
     python_source_code = fl.read()
-    tree = parse(python_source_code)
+    tree = ast.parse(python_source_code)
     return ast.dump(tree, include_attributes=True)
