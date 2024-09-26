@@ -27,7 +27,7 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }
-    this.ast += ' )\n';
+    this.ast += ')\n';
   }
 
   private parseFunctionFeclaration(node: ts.FunctionDeclaration) {
@@ -39,23 +39,47 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }    
-    this.ast += ' );\n';
+    this.ast += ');\n';
+  }
+
+  private parseTypeReference(node: ts.TypeReferenceNode) {
+    this.ast += 'TypeReference ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }    
+    this.ast += ')';
   }
 
   private parseIdentifier(node: ts.Identifier) {
     this.ast += 'Identifier ';
     this.ast += this.locationize(node);
-    this.ast += '( ';
+    this.ast += '(';
     this.ast += node.getText();
-    this.ast += ' )\n';
+    this.ast += ') ';
+  }
+
+  private parseQualifiedName(node: ts.QualifiedName) {
+    this.ast += 'QualifiedName ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }    
+    this.ast += ')';
   }
 
   private parseStringLiteral(node: ts.StringLiteral) {
     this.ast += 'StringLiteral ';
     this.ast += this.locationize(node);
-    this.ast += '( ';
+    this.ast += '(';
     this.ast += node.getText();
-    this.ast += ' )\n';
+    this.ast += ') ';
   }
 
   private parseClassDeclaration(node: ts.ClassDeclaration) {
@@ -67,7 +91,7 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }
-    this.ast += ' )\n';
+    this.ast += ')\n';
   }
 
   private parseCallExpression(node: ts.CallExpression) {
@@ -79,7 +103,7 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }
-    this.ast += ' )\n';
+    this.ast += ')\n';
   }
 
   private parsePropertyAccessExpression(node : ts.PropertyAccessExpression) {
@@ -91,7 +115,7 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }
-    this.ast += ' )\n';   
+    this.ast += ')\n';   
   }
 
   private parsePropertyDeclaration(node : ts.PropertyDeclaration) {
@@ -103,7 +127,103 @@ export class Parser {
       const childi = node.getChildAt(i);
       this.parse(childi);
     }
-    this.ast += ' )\n';   
+    this.ast += ')\n';   
+  }
+
+  private parseParameter(node : ts.ParameterDeclaration) {
+    this.ast += 'Parameter ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseConstructor(node : ts.ConstructorDeclaration) {
+    this.ast += 'Constructor ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseVariableStatement(node : ts.VariableStatement) {
+    this.ast += 'VariableStatement ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+ private parseMethodDeclaration(node : ts.MethodDeclaration) {
+    this.ast += 'MethodDeclaration ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseVariableDeclarationList(node : ts.VariableDeclarationList) {
+    this.ast += 'VariableDeclarationList ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseVariableDeclaration(node : ts.VariableDeclaration) {
+    this.ast += 'VariableDeclaration ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseBlock(node : ts.Block) {
+    this.ast += 'Block ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
+  }
+
+  private parseExpressionStatement(node : ts.ExpressionStatement) {
+    this.ast += 'ExpressionStatement ';
+    this.ast += this.locationize(node);
+    this.ast += '( ';
+    const numchilds = node.getChildCount();
+    for (let i=0;i<numchilds;i++) {
+      const childi = node.getChildAt(i);
+      this.parse(childi);
+    }
+    this.ast += ')\n';   
   }
 
   private parse(node: ts.Node) {
@@ -114,14 +234,50 @@ export class Parser {
       case ts.SyntaxKind.FunctionDeclaration:
         this.parseFunctionFeclaration(node as ts.FunctionDeclaration);
         break;
-      case ts.SyntaxKind.TypeReference:
-        this.ast += node.getText();
-        break;
       case ts.SyntaxKind.PropertyDeclaration:
         this.parsePropertyDeclaration(node as ts.PropertyDeclaration);
         break;
+      case ts.SyntaxKind.QualifiedName:
+        this.parseQualifiedName(node as ts.QualifiedName);
+        break;
+      case ts.SyntaxKind.Block:
+        this.parseBlock(node as ts.Block);
+        break;
+      case ts.SyntaxKind.ExpressionStatement:
+        this.parseExpressionStatement(node as ts.ExpressionStatement);
+        break;
+      case ts.SyntaxKind.VariableDeclaration:
+        this.parseVariableDeclaration(node as ts.VariableDeclaration);
+        break;
+      case ts.SyntaxKind.VariableDeclarationList:
+        this.parseVariableDeclarationList(node as ts.VariableDeclarationList);
+        break;
+      case ts.SyntaxKind.VariableStatement:
+        this.parseVariableStatement(node as ts.VariableStatement);
+        break;
+      case ts.SyntaxKind.MethodDeclaration:
+        this.parseMethodDeclaration(node as ts.MethodDeclaration);
+        break;
+      case ts.SyntaxKind.TypeReference:
+        this.parseTypeReference(node as ts.TypeReferenceNode);
+        break;
+      case ts.SyntaxKind.Constructor:
+        this.parseConstructor(node as ts.ConstructorDeclaration);
+        break;
+      case ts.SyntaxKind.Parameter:
+        this.parseParameter(node as ts.ParameterDeclaration);
+        break;
       case ts.SyntaxKind.Identifier:
         this.parseIdentifier(node as ts.Identifier);
+        break;
+      case ts.SyntaxKind.CommaToken:
+        this.ast += ", ";
+        break;
+      case ts.SyntaxKind.EqualsToken:
+        this.ast += "= ";
+        break;
+      case ts.SyntaxKind.StringKeyword:
+        this.ast += "StringKeyword " + this.locationize(node);
         break;
       case ts.SyntaxKind.AsKeyword:
         this.ast += "AsKeyword ";
@@ -132,8 +288,11 @@ export class Parser {
       case ts.SyntaxKind.DotToken:
         this.ast += "DotToken ";
         break;
-      case ts.SyntaxKind.ThisKeyword:
-        this.ast += "ThisKeyword " + this.locationize(node);
+       case ts.SyntaxKind.ThisKeyword:
+        this.ast += ts.SyntaxKind[node.kind] + this.locationize(node);
+        break;
+      case ts.SyntaxKind.ConstructorKeyword:
+        this.ast += "ConstructorKeyword " + this.locationize(node);
         break;
       case ts.SyntaxKind.ColonToken:
         this.ast += "ColonToken ";
@@ -144,7 +303,13 @@ export class Parser {
        case ts.SyntaxKind.AsteriskToken:
         this.ast += "AsteriskToken ";
         break;
-       case ts.SyntaxKind.OpenBraceToken:
+      case ts.SyntaxKind.OpenParenToken:
+        this.ast += "( ";
+        break;
+      case ts.SyntaxKind.CloseParenToken:
+        this.ast += ") ";
+        break;
+      case ts.SyntaxKind.OpenBraceToken:
         this.ast += "{ ";
         break;
       case ts.SyntaxKind.CloseBraceToken:
@@ -168,6 +333,7 @@ export class Parser {
       case ts.SyntaxKind.ExportKeyword:
       case ts.SyntaxKind.PrivateKeyword:
       case ts.SyntaxKind.ReadonlyKeyword:
+      case ts.SyntaxKind.ConstKeyword:
       case ts.SyntaxKind.SemicolonToken:
         break;
       default:
