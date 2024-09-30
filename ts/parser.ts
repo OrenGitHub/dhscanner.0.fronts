@@ -20,17 +20,35 @@ export class Parser {
 
   private parse(node: ts.Node) {
     switch (node.kind) {
-     // ignore the following:
+      // ignore completely:
       // ( deliberately fall-through )
       case ts.SyntaxKind.SemicolonToken:
       case ts.SyntaxKind.TypeKeyword:
       case ts.SyntaxKind.ExportKeyword:
+      case ts.SyntaxKind.JSDocComment:
+      case ts.SyntaxKind.KeyOfKeyword:
       case ts.SyntaxKind.PrivateKeyword:
       case ts.SyntaxKind.CloseBraceToken:
       case ts.SyntaxKind.ReadonlyKeyword:
+      case ts.SyntaxKind.TypeAliasDeclaration:
       case ts.SyntaxKind.FirstPunctuation:
+      case ts.SyntaxKind.LetKeyword:
+      case ts.SyntaxKind.EndOfFileToken:
       case ts.SyntaxKind.ConstKeyword:
+      case ts.SyntaxKind.ExportAssignment:
         break;
+      // ignore their children:
+      // ( deliberately fall-through )
+      case ts.SyntaxKind.ArrowFunction:
+      case ts.SyntaxKind.ObjectLiteralExpression:
+        this.ast += ts.SyntaxKind[node.kind];
+        this.ast += this.locationize(node);
+        this.ast += '(';
+        this.ast += ')';
+        break; 
+      // irreplevant children, but important text !
+      // ( deliberately fall-through )
+      case ts.SyntaxKind.StringLiteral:
       case ts.SyntaxKind.Identifier:
         this.ast += ts.SyntaxKind[node.kind];
         this.ast += this.locationize(node);
@@ -38,7 +56,10 @@ export class Parser {
         this.ast += node.getText();
         this.ast += ')';
         break;
+      // ignore me, but NOT my children:
+      // ( deliberately fall-through )
       case ts.SyntaxKind.SyntaxList:
+      case ts.SyntaxKind.FirstStatement:
         for (let i=0;i<node.getChildCount();i++) {
           const childi = node.getChildAt(i);
           this.parse(childi);
