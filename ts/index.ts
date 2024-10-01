@@ -18,7 +18,7 @@ app.post('/to/native/ts/ast', upload.single('source'), (req: Request, res: Respo
   } else {
     const parser = new Parser('moish', `${req.file.buffer}`);
     const ast = parser.run();
-    res.send(`${JSON.stringify(ast)}`);
+    res.send(ast);
   }
 });
 
