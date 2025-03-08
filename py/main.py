@@ -1,13 +1,8 @@
 import ast
+import logging
+import fastapi
 
-from flask import Flask
-from flask import request
-
-import subprocess
-
-from typing import Final
-
-app = Flask(__name__)
+app = fastapi.FastAPI()
 
 class ReplaceQuotes(ast.NodeTransformer):
     def visit_Constant(self, node: ast.Constant) -> ast.Constant:
@@ -16,14 +11,16 @@ class ReplaceQuotes(ast.NodeTransformer):
             node.value = node.value.replace('"', '')
         return node
 
-@app.route('/healthcheck', methods=['GET'])
+@app.get('/healthcheck')
 def healthcheck():
     return { 'healthy': True }
 
-@app.route('/to/native/py/ast', methods=['POST'])
-def parse():
-    fl = request.files['source']
-    python_source_code = fl.read()
+@app.post('/to/native/py/ast')
+async def parse(source: fastapi.UploadFile = fastapi.File(...)):
+    content = await source.read()
+    python_source_code = content.decode()
+    logging.info(python_source_code)
     original_tree = ast.parse(python_source_code)
     normalized_tree = ReplaceQuotes().visit(original_tree)
-    return ast.dump(normalized_tree, include_attributes=True)
+    result = ast.dump(normalized_tree, include_attributes=True)
+    return fastapi.Response(content=result, media_type="text/plain")
