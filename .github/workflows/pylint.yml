@@ -26,4 +26,5 @@ jobs:
         pip install pylint
     - name: Inspect the code
       run: |
-        pylint $(find py -name '*.py')
+        cd py
+        pylint $(find . -name '*.py')
