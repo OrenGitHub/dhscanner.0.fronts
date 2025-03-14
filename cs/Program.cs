@@ -75,7 +75,11 @@ string Stringify(SyntaxNode node)
     var children = node.ChildNodes();
     var val = "null";
     if (children.Any() == false) {
-        val = node.ToString();
+        val = node.ToString()
+            .Replace(";", "")
+            .Replace(" ", "")
+            .Replace(":", "")
+            .Replace("\"", "");
     }
     result.Append($"value:{val},");
     result.Append($"{locationString},");
