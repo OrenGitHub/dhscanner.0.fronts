@@ -27,6 +27,7 @@ export class Parser {
       case ts.SyntaxKind.ExportKeyword:
       case ts.SyntaxKind.JSDocComment:
       case ts.SyntaxKind.CommaToken:
+      case ts.SyntaxKind.AsyncKeyword:
       case ts.SyntaxKind.KeyOfKeyword:
       case ts.SyntaxKind.PrivateKeyword:
       case ts.SyntaxKind.CloseBraceToken:
@@ -41,7 +42,6 @@ export class Parser {
       // ignore their children:
       // ( deliberately fall-through )
       case ts.SyntaxKind.ArrowFunction:
-      case ts.SyntaxKind.ObjectLiteralExpression:
         this.ast += ts.SyntaxKind[node.kind];
         this.ast += this.locationize(node);
         this.ast += '(';
@@ -50,6 +50,12 @@ export class Parser {
       // irreplevant children, but important text !
       // ( deliberately fall-through )
       case ts.SyntaxKind.StringLiteral:
+        this.ast += ts.SyntaxKind[node.kind];
+        this.ast += this.locationize(node);
+        this.ast += '(';
+        this.ast += '"' + node.getText().replace(/'/g, "").replace(/"/g, "") + '"';
+        this.ast += ')';
+        break;
       case ts.SyntaxKind.Identifier:
         this.ast += ts.SyntaxKind[node.kind];
         this.ast += this.locationize(node);
