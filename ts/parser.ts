@@ -26,6 +26,7 @@ export class Parser {
       case ts.SyntaxKind.TypeKeyword:
       case ts.SyntaxKind.ExportKeyword:
       case ts.SyntaxKind.JSDocComment:
+      case ts.SyntaxKind.CommaToken:
       case ts.SyntaxKind.KeyOfKeyword:
       case ts.SyntaxKind.PrivateKeyword:
       case ts.SyntaxKind.CloseBraceToken:
@@ -60,9 +61,11 @@ export class Parser {
       // ( deliberately fall-through )
       case ts.SyntaxKind.SyntaxList:
       case ts.SyntaxKind.FirstStatement:
-        for (let i=0;i<node.getChildCount();i++) {
+        const n = node.getChildCount();
+        for (let i=0;i<n;i++) {
           const childi = node.getChildAt(i);
           this.parse(childi);
+          if (i < (n-1)) { this.ast += ','; }
         }
         break;
       default:
@@ -78,12 +81,21 @@ export class Parser {
     }
   }
 
+  private clean() {
+    return this.ast
+      .replace(/,\)/g, ")")
+      .replace(/\(,/g, "(")
+      .replace(/,CloseParenToken/g, "CloseParenToken")
+      .replace(/,+/g, ",");
+  }
+
   public run() {
     const numchilds = this.sourceFile.getChildCount();
     for (let i=0;i<numchilds;i++) {
       const childi = this.sourceFile.getChildAt(i);
       this.parse(childi);
     }
-    return this.ast;
+    const cleaned = this.clean();
+    return cleaned;
   }
 }
