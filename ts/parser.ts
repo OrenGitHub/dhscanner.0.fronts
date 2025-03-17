@@ -8,7 +8,8 @@ export class Parser {
       filename,
       sourceCode,
       ts.ScriptTarget.ES2015,
-      true
+      true,
+      ts.ScriptKind.TSX
     );
   }
 
@@ -26,6 +27,7 @@ export class Parser {
       case ts.SyntaxKind.TypeKeyword:
       case ts.SyntaxKind.ExportKeyword:
       case ts.SyntaxKind.JSDocComment:
+      case ts.SyntaxKind.JsxAttributes:
       case ts.SyntaxKind.CommaToken:
       case ts.SyntaxKind.AsyncKeyword:
       case ts.SyntaxKind.KeyOfKeyword:
