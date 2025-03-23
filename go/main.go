@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "io/ioutil"
     "net/http"
     "go/parser"
@@ -12,10 +13,31 @@ import (
     "github.com/gin-gonic/gin"
 )
 
+func cleanup_quoted(original string, quote string) string {
+    value := regexp.MustCompile(`(?m)Value: "` + quote + "(.*?)" + quote + `"`)
+    result := value.ReplaceAllStringFunc(original, func(match string) string {
+        start := len("Value: ") + 1
+        end := len(match) - 1
+        withoutValuePrefix := match[start:end]
+        contentNoQuotes := strings.ReplaceAll(withoutValuePrefix, `"`, "")
+        contentNoBackslash := strings.ReplaceAll(contentNoQuotes, "\\", "")
+        contentNoBackticks := strings.ReplaceAll(contentNoBackslash, "`", "")
+        return fmt.Sprintf("Value: \"%s\"", contentNoBackticks)
+    })
+    return result
+}
+
+func cleanup_phase_1(original string) string {
+    return cleanup_quoted(original, "`")
+}
+
+func cleanup_phase_0(original string) string {
+    return cleanup_quoted(original, `\\\"`)
+}
+
 func cleanup(treeRaw string) string {
 
-    value := regexp.MustCompile(`(?m)Value: "\\\"(.*)\\\""$`)
-    tree := value.ReplaceAllString(treeRaw, `Value: "$1"`)
+    tree := cleanup_phase_1(cleanup_phase_0(treeRaw))
     removeLineNumbers := regexp.MustCompile(`(?m)^\s*\d+  `)
     treeWithoutLineNumbers := removeLineNumbers.ReplaceAllString(tree, "")
     removeIndentingDots := regexp.MustCompile(`(?m)^(\.  )*`)
