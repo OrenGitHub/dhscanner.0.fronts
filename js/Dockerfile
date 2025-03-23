@@ -1,4 +1,4 @@
-FROM node:lts-iron
+FROM node:lts-slim
 WORKDIR /usr/app
 RUN npm install esprima
 RUN npm install express
