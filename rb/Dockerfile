@@ -9,6 +9,8 @@ WORKDIR translator
 RUN gem install syntax_tree
 COPY routes.rb config
 COPY translator_controller.rb app/controllers
+COPY development.rb config/environments
+COPY production.rb config/environments
 COPY Gemfile Gemfile
 EXPOSE 3000
 CMD [ "rails", "server", "-b", "0.0.0.0" ]
