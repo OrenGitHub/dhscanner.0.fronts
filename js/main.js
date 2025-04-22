@@ -2,6 +2,7 @@ const multer = require('multer');
 const esprima = require('esprima');
 const express = require('express');
 const winston = require('winston');
+const babel = require('@babel/core');
 
 const app = express()
 const port = 3000
@@ -34,8 +35,14 @@ app.post('/to/esprima/js/ast', upload.single('source'), (req, res) => {
       ast = esprima.parseScript(sourceCode, { loc: true });
     }
     catch (error) {
-      logger.warn(`parse error: ${req.file.originalname}`)
-      ast = { status: "FAIL" };
+      try {
+        const transpiled = babel.transformSync(sourceCode,{presets:['@babel/preset-react']}).code;
+        logger.info(`code: >>>${transpiled}<<<`);
+        ast = esprima.parseModule(transpiled, { loc: true })
+      } catch (error) {
+        logger.warn(`parse error: ${req.file.originalname}`)
+        ast = { status: "FAIL" };
+      }
     }
   }
 
