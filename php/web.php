@@ -62,7 +62,7 @@ Route::post('/to/php/code', function (Request $request) {
     // now extract actual php code from relevant tags
     preg_match_all('/<\?php\s+(.*?)\s*\?>/s', $compiled, $matches);
     $statements = array_filter($matches[1]);
-    $code = implode("\n", $statements);
+    $code = implode(";\n", $statements) . ";\n";
 
     // for some debug options
     $originalName = $file->getClientOriginalName();
@@ -76,5 +76,5 @@ Route::post('/to/php/code', function (Request $request) {
         Log::info($message);        
     }
 
-    return response($code)->header('Content-Type', 'text/plain');
+    return response("<?php\n" . $code)->header('Content-Type', 'text/plain');
 });
