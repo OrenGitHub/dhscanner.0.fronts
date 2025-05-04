@@ -1,1 +1,4 @@
 py/Pipfile
+tests/
+dhscanner.0.fronts.code-workspace
+docker-compose.fronts.yml
