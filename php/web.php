@@ -4,6 +4,10 @@ use PhpParser\Error;
 use PhpParser\NodeDumper;
 use PhpParser\ParserFactory;
 
+use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
+
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
@@ -20,6 +24,22 @@ config(['logging.default' => 'errorlog']);
 
 Route::get('/csrf_token', function() { return csrf_token(); });
 
+class StringNormalizer extends NodeVisitorAbstract {
+    public function enterNode(Node $node) {
+        if ($node instanceof Node\Scalar\String_) {
+            $start = $node->getStartLine();
+            $end = $node->getEndLine();
+            if ($start == $end) {
+                $raw = str_replace('"', '', $node->value);
+                $node->value = '"' . $raw . '"';
+            }
+            if ($start < $end) {
+                $node->value = "\"__SKIPPED_HEREDOC__\"";
+            }
+        }
+    }
+}
+
 Route::post('/to/php/ast', function (Request $request) {
 
     $file = $request->file('source');
@@ -30,6 +50,10 @@ Route::post('/to/php/ast', function (Request $request) {
 
     try { $ast = $parser->parse($code); }
     catch (Error $error) { return "ERROR"; }
+
+    $traverser = new NodeTraverser();
+    $traverser->addVisitor(new StringNormalizer());
+    $ast = $traverser->traverse($ast);
 
     $dumper = new NodeDumper(['dumpPositions' => true]);
     return $dumper->dump($ast, $code) . "\n";
