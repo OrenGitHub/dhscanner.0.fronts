@@ -26,7 +26,10 @@ Route::get('/csrf_token', function() { return csrf_token(); });
 
 class StringNormalizer extends NodeVisitorAbstract {
     public function enterNode(Node $node) {
-        if ($node instanceof Node\Scalar\String_) {
+        if (
+            ($node instanceof Node\Scalar\String_) ||
+            ($node instanceof Node\Scalar\EncapsedStringPart)
+        ) {
             $start = $node->getStartLine();
             $end = $node->getEndLine();
             if ($start == $end) {
