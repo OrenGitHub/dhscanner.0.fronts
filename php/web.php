@@ -30,15 +30,20 @@ class StringNormalizer extends NodeVisitorAbstract {
             ($node instanceof Node\Scalar\String_) ||
             ($node instanceof Node\Scalar\EncapsedStringPart)
         ) {
-            $start = $node->getStartLine();
-            $end = $node->getEndLine();
-            if ($start == $end) {
-                $raw = str_replace('"', '', $node->value);
-                $node->value = '"' . $raw . '"';
-            }
-            if ($start < $end) {
-                $node->value = "\"__SKIPPED_HEREDOC__\"";
-            }
+            //$start = $node->getStartLine();
+            //$end = $node->getEndLine();
+            //if ($start == $end) {
+            $raw = str_replace('"', '', $node->value);
+            $one_liner = preg_replace('/\s+/', ' ', $raw);
+            $node->value = '"' . $one_liner . '"';
+            //}
+            //if ($start < $end) {
+            //    $node->value = "\"__SKIPPED_HEREDOC__\"";
+            //}
+        }
+
+        if ($node instanceof Node\Stmt\InlineHTML) {
+            $node->value = 'null';
         }
     }
 }
