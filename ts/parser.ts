@@ -41,14 +41,6 @@ export class Parser {
       case ts.SyntaxKind.ConstKeyword:
       case ts.SyntaxKind.ExportAssignment:
         break;
-      // ignore their children:
-      // ( deliberately fall-through )
-      case ts.SyntaxKind.ArrowFunction:
-        this.ast += ts.SyntaxKind[node.kind];
-        this.ast += this.locationize(node);
-        this.ast += '(';
-        this.ast += ')';
-        break; 
       // irreplevant children, but important text !
       // ( deliberately fall-through )
       case ts.SyntaxKind.StringLiteral:
