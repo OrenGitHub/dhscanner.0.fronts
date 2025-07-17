@@ -86,7 +86,8 @@ export class Parser {
       .replace(/,\)/g, ")")
       .replace(/\(,/g, "(")
       .replace(/,CloseParenToken/g, "CloseParenToken")
-      .replace(/,+/g, ",");
+      .replace(/,+/g, ",")
+      .replace(/,$/, "");
   }
 
   public run() {
