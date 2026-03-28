@@ -1,7 +1,5 @@
-import express = require('express');
-import { Express, Request, Response } from 'express';
-import multer = require('multer');
-import { Multer } from 'multer';
+import express, { Express, Request, Response } from 'express';
+import multer from 'multer';
 import { Parser } from './parser';
 
 const app: Express = express();

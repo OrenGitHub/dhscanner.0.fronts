@@ -6,10 +6,12 @@ RUN npm install express
 RUN npm install multer
 RUN npm install typescript
 RUN npm install @types/node
+RUN npm install @types/express
+RUN npm install @types/multer
 COPY . .
 
 # Compile TypeScript
-RUN npx tsc index.ts
+RUN npx tsc --esModuleInterop index.ts
 
 # Production stage
 FROM node:lts-alpine
