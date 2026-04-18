@@ -11,7 +11,7 @@ RUN npm install @types/multer
 COPY . .
 
 # Compile TypeScript
-RUN npx tsc --esModuleInterop index.ts
+RUN npx tsc --esModuleInterop --module commonjs index.ts parser.ts
 
 # Production stage
 FROM node:lts-alpine
