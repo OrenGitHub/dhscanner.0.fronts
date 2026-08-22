@@ -57,6 +57,29 @@ export class Parser {
         this.ast += node.getText();
         this.ast += ')';
         break;
+      // NumericLiteral === FirstLiteralToken (SyntaxKind value 9; the
+      // reverse lookup `SyntaxKind[9]` returns "FirstLiteralToken" in
+      // TS 5.4.5, which is what the downstream Happy grammar's
+      // `exp_int` rule already keys on). The default branch drops the
+      // text because the node has no children; recover it here so the
+      // parser can build a real `ExpInt` instead of the `888`
+      // placeholder. We normalize to a pure decimal integer so the
+      // Alex lexer's `@INT = @DIGIT+` regex accepts it -- this handles
+      // hex (0x…), scientific (1e3), and separator (1_000) forms
+      // uniformly, and preserves the ancient invariant that the
+      // grammar sees only digits inside the parens. `NaN` guard so an
+      // unparseable literal (shouldn't happen for a valid TS numeric
+      // literal, but doesn't cost anything) doesn't emit the string
+      // "NaN" and blow up lexing.
+      case ts.SyntaxKind.NumericLiteral:
+        this.ast += ts.SyntaxKind[node.kind];
+        this.ast += this.locationize(node);
+        this.ast += '(';
+        const asNumber = Number((node as ts.NumericLiteral).text);
+        const asInt = Number.isFinite(asNumber) ? Math.trunc(asNumber) : 0;
+        this.ast += String(asInt);
+        this.ast += ')';
+        break;
       // ignore me, but NOT my children:
       // ( deliberately fall-through )
       case ts.SyntaxKind.SyntaxList:
