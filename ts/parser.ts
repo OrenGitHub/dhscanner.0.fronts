@@ -50,6 +50,33 @@ export class Parser {
         this.ast += '"' + node.getText().replace(/'/g, "").replace(/"/g, "") + '"';
         this.ast += ')';
         break;
+      // Template-literal leaf tokens carry the constant string fragments
+      // that sit between the backticks and the `${...}` interpolations
+      // (or the whole body, for a no-substitution literal). The TS
+      // compiler exposes the cooked content as `.text`; the default
+      // branch would emit empty parens because these nodes have no
+      // children. Emit `.text` as a STR-token payload so the downstream
+      // Happy grammar's templateHead / templateMiddle /
+      // lastTemplateToken / exp_template_token rules can lift each
+      // fragment into a first-class `Ast.ExpStr` (see
+      // `Actions.constStrExp` + `Actions.fstring`). Newlines are folded
+      // to spaces so a multi-line template literal doesn't inject a
+      // NewLineTrivia into the token stream; quotes are stripped to
+      // match the `@STR = "..."` lexer regex, mirroring the
+      // StringLiteral case above.
+      case ts.SyntaxKind.TemplateHead:
+      case ts.SyntaxKind.TemplateMiddle:
+      case ts.SyntaxKind.TemplateTail:
+      case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
+        this.ast += ts.SyntaxKind[node.kind];
+        this.ast += this.locationize(node);
+        this.ast += '(';
+        this.ast += '"' + (node as ts.LiteralLikeNode).text
+          .replace(/[\r\n]/g, " ")
+          .replace(/'/g, "")
+          .replace(/"/g, "") + '"';
+        this.ast += ')';
+        break;
       case ts.SyntaxKind.Identifier:
         this.ast += ts.SyntaxKind[node.kind];
         this.ast += this.locationize(node);
